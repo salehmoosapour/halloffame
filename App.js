@@ -7,14 +7,14 @@
 /**
  * Importing Installed Packages
  */
-import { AsyncStorage } from "react-native";
 import { createStackNavigator, createAppContainer } from "react-navigation";
+
 /**
  * Importing Routes Object Containing :
  *  - Screens
  *  - navigationOptions
  */
-import Router from "./src/routing/index";
+import Router from "./components/routing/index";
 
 /**
  * Creating StackNavigator and Exporting createAppContainer

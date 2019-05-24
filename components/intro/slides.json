@@ -1,0 +1,20 @@
+[
+  {
+    "key": "firstSlide",
+    "title": "I am first slide",
+    "text": "Imagine something cool ^_^",
+    "backgroundColor": "#59b2ab"
+  },
+  {
+    "key": "secondSlide",
+    "title": "I am the second child",
+    "text": "Other cool stuff *_*",
+    "backgroundColor": "#febe29"
+  },
+  {
+    "key": "lastSlide",
+    "title": "I am the last born :(",
+    "text": "Don't have anything to say O_O",
+    "backgroundColor": "#22bcb5"
+  }
+]
