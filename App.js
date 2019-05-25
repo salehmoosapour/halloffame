@@ -8,7 +8,6 @@
  * Importing Installed Packages
  */
 import { createStackNavigator, createAppContainer } from "react-navigation";
-
 /**
  * Importing Routes Object Containing :
  *  - Screens

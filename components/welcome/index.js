@@ -9,13 +9,16 @@ import {
   View,
   Image,
   TextInput,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  BackHandler
 } from "react-native";
 
 /**
  * Importing Installed Packages
  */
 import shuffleSeed from "shuffle-seed";
+import Sound from "react-native-sound";
+import TimerMixin from "react-timer-mixin";
 
 /**
  * Importing Welcome Screen Styles
@@ -31,6 +34,17 @@ const thirdImage = require("../../assets/images/welcome/third.gif");
 const forthImage = require("../../assets/images/welcome/forth.gif");
 const fifthImage = require("../../assets/images/welcome/fifth.gif");
 
+/**
+ * Loading exit song and initializing sound package
+ */
+var exitSound = require("../../assets/sounds/exit.mp3");
+const sound = new Sound(exitSound, null, e => {
+  if (e) console.log(e);
+});
+
+// Variable for checking back button presses
+let backCount = 0;
+
 export default class Welcome extends Component {
   /**
    * Defining global interval variable to assign Interval to it later
@@ -39,14 +53,14 @@ export default class Welcome extends Component {
 
   state = {
     inputNum: "1",
-    loadingImage: null,
+    currentImage: null,
     images: [firstImage, secondImage, thirdImage, forthImage, fifthImage]
   };
 
   /**
    * Function used for changing the image & resetting interval after each time user changes the image
    *
-   * @param shouldShuffle (optional) - @boolean
+   * @boolean shouldShuffle (optional)
    */
   chooseRandomImage = (shouldShuffle = false) => {
     var array = this.state.images;
@@ -60,18 +74,18 @@ export default class Welcome extends Component {
     // Show random image from shuffled array
     let randomNumber = Math.floor(Math.random() * this.state.images.length);
     this.setState({
-      loadingImage: array[randomNumber]
+      currentImage: array[randomNumber]
     });
 
     // Resetting the interval
-    clearInterval(this.interval);
+    TimerMixin.clearInterval(this.interval);
     this._changeImageInterval();
   };
 
   /**
    * Handle TextInput Value Change Event
    *
-   * @param text - @string
+   * @string text
    */
   _inputValueChange = text => {
     this.setState({
@@ -106,36 +120,60 @@ export default class Welcome extends Component {
    *
    * @noparam
    */
-  _changeImageInterval() {
-    this.interval = setInterval(() => {
+  _changeImageInterval = () => {
+    this.interval = TimerMixin.setInterval(() => {
       this.chooseRandomImage();
     }, 5000);
-  }
+  };
 
   /**
-   * Choose a random initial image
-   *
-   * @noparam
+   * BackHandler custom handler function checking if users pressed back twice in 500ms
    */
-  componentWillMount() {
-    this.chooseRandomImage();
-  }
+  _exitHandler = () => {
+    backCount++;
+    var t = TimerMixin.setTimeout(() => {
+      if (backCount == 2) {
+        sound.play();
+        TimerMixin.clearInterval(this.interval);
+        TimerMixin.clearTimeout(t);
+        BackHandler.exitApp();
+      }
+      backCount = 0;
+      if (backCount == 0) {
+        this.props.navigation.push("HallOfFameScreen");
+      }
+    }, 500);
+    return true;
+  };
 
   /**
-   * Setting interval when component is mounted
+   * Setting interval when component is mounted & choose a random initial image
    *
    * @noparam
    */
   componentDidMount() {
+    this.chooseRandomImage();
     this._changeImageInterval();
+    BackHandler.addEventListener("hardwareBackPress", this._exitHandler);
   }
+
+  /**
+   * Clearing interval before app is closed
+   */
+  componentWillUnmount() {
+    BackHandler.removeEventListener("hardwareBackPress", this._exitHandler);
+    TimerMixin.clearInterval(this.interval);
+  }
+
   render() {
     return (
       <View style={welcomeStyles.container}>
-        <Image
-          source={this.state.loadingImage}
-          style={welcomeStyles.loadingImage}
-        />
+        <View style={welcomeStyles.currentImageWrapper}>
+          <Image
+            source={this.state.currentImage}
+            style={welcomeStyles.currentImage}
+          />
+        </View>
         <TextInput
           onChangeText={text => this._inputValueChange(text)}
           value={this.state.inputNum}
@@ -160,7 +198,7 @@ export default class Welcome extends Component {
         </View>
         <TouchableNativeFeedback
           onPress={() => {
-            this.props.navigation.navigate("HomeScreen");
+            this.props.navigation.push("HallOfFameScreen");
           }}
         >
           <View style={welcomeStyles.Button}>

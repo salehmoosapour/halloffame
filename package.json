@@ -9,11 +9,13 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.4.0",
     "react": "16.8.3",
+    "react-mixin": "^5.0.0",
     "react-native": "0.59.8",
     "react-native-app-intro-slider": "^2.0.1",
-    "react-native-async-storage": "0.0.1",
     "react-native-gesture-handler": "^1.2.1",
+    "react-native-sound": "^0.10.12",
     "react-navigation": "^3.11.0",
+    "react-timer-mixin": "^0.13.4",
     "shuffle-seed": "^1.1.6"
   },
   "devDependencies": {
